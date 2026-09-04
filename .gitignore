@@ -26,3 +26,6 @@ replay_pid*
 # Local runtime and build output
 data/
 **/target/
+
+# IntelliJ IDEA project files
+.idea/
