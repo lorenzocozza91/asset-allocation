@@ -37,6 +37,7 @@ public class MarketPriceScheduler {
         long startedAt = System.nanoTime();
         int processed = 0;
         int saved = 0;
+        int duplicates = 0;
         int unavailable = 0;
         int skipped = 0;
 
@@ -59,7 +60,7 @@ public class MarketPriceScheduler {
                 }
 
                 var marketQuote = quote.get();
-                assetPriceRepository.save(new AssetPrice(
+                boolean inserted = assetPriceRepository.save(new AssetPrice(
                         UUID.randomUUID(),
                         asset.id(),
                         marketQuote.observedAt(),
@@ -67,9 +68,15 @@ public class MarketPriceScheduler {
                         marketQuote.currency(),
                         marketQuote.source(),
                         Instant.now()));
-                saved++;
-                log.debug("Stored market price {} {} for asset {} ({})",
-                        marketQuote.price(), marketQuote.currency(), asset.id(), asset.ticker());
+                if (inserted) {
+                    saved++;
+                    log.debug("Stored market price {} {} for asset {} ({})",
+                            marketQuote.price(), marketQuote.currency(), asset.id(), asset.ticker());
+                } else {
+                    duplicates++;
+                    log.debug("Market price already stored for asset {} ({}) at {}",
+                            asset.id(), asset.ticker(), marketQuote.observedAt());
+                }
             } catch (RuntimeException exception) {
                 unavailable++;
                 log.error("Failed to update market price for asset {} ({})",
@@ -78,8 +85,8 @@ public class MarketPriceScheduler {
         }
 
         long durationMs = (System.nanoTime() - startedAt) / 1_000_000;
-        log.info("Completed scheduled market price update: processed={}, saved={}, unavailable={}, "
-                        + "skipped={}, durationMs={}",
-                processed, saved, unavailable, skipped, durationMs);
+        log.info("Completed scheduled market price update: processed={}, saved={}, duplicates={}, "
+                        + "unavailable={}, skipped={}, durationMs={}",
+                processed, saved, duplicates, unavailable, skipped, durationMs);
     }
 }

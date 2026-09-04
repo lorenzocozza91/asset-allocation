@@ -13,9 +13,9 @@ public class AssetPriceRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void save(AssetPrice assetPrice) {
-        jdbcTemplate.update(
-                "INSERT INTO asset_price "
+    public boolean save(AssetPrice assetPrice) {
+        int rows = jdbcTemplate.update(
+                "INSERT OR IGNORE INTO asset_price "
                         + "(id, asset_id, observed_at, price, currency, source, created_at) "
                         + "VALUES (?, ?, ?, ?, ?, ?, ?)",
                 assetPrice.id().toString(),
@@ -25,5 +25,6 @@ public class AssetPriceRepository {
                 assetPrice.currency(),
                 assetPrice.source(),
                 assetPrice.createdAt().toString());
+        return rows == 1;
     }
 }
