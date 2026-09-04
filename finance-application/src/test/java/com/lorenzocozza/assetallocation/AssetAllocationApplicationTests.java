@@ -16,9 +16,9 @@ class AssetAllocationApplicationTests {
 
     @Test
     void contextLoadsAndMigrationsCreateFinanceTables() {
-        assertEquals(2, jdbcTemplate.queryForObject(
+        assertEquals(3, jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' "
-                        + "AND name IN ('asset', 'asset_transaction')",
+                        + "AND name IN ('asset', 'asset_transaction', 'asset_price')",
                 Integer.class));
     }
 }

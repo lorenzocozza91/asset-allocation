@@ -63,6 +63,18 @@ Stores purchases and sales:
 
 Quantities and monetary values are represented with `BigDecimal` in Java to avoid floating-point rounding errors.
 
+### `asset_price`
+
+Stores historical price observations. The current value of an asset is the most recent observation by `observed_at`; older observations are retained for portfolio valuation and charts.
+
+- `id` — UUID stored as text
+- `asset_id` — UUID reference to `asset`
+- `observed_at` — timestamp of the market observation, stored in UTC
+- `price` — observed price or index value
+- `currency` — price currency
+- `source` — optional provider or broker name
+- `created_at` — insertion timestamp
+
 ## Build and test
 
 From the repository root:
