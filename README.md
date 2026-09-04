@@ -104,3 +104,11 @@ GET http://localhost:8080/actuator/health
 ## Current scope
 
 The current implementation establishes the server, database connection, migration, and domain foundation. REST endpoints and transaction-management services will be added next.
+
+## Market data
+
+The first market-data adapter uses Yahoo Finance's chart endpoint. Set an asset's ticker to the Yahoo Finance symbol, including the exchange suffix when required. For the EUR Xetra listing of the ETF with ISIN `IE00BFNM3J75`, use `SNAW.DE`.
+
+The adapter returns the latest available price, timestamp, currency, and source through the `MarketDataProvider` interface. Yahoo Finance does not require an API key for this endpoint, but the endpoint is not an officially guaranteed public market-data API and may return delayed data or become unavailable.
+
+The application stores the latest available quote for every asset with a configured Yahoo ticker immediately after startup and then once every hour. The interval and initial delay can be changed with `market-data.schedule.interval-ms` and `market-data.schedule.initial-delay-ms`.
