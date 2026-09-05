@@ -119,7 +119,7 @@ The current state of an asset can be retrieved with:
 GET /api/assets/{assetId}/state
 ```
 
-The response includes current quantity, bought and sold quantities, buy/sell amounts, fees, invested amount, average buy price, latest stored market price, current value, and unrealized profit percentage.
+The response includes current quantity, bought and sold quantities, buy/sell amounts, fees, invested amount, average buy price, latest stored market price, current value, unrealized profit percentage, expected tax, profit without tax, and profit without tax and fees. Expected tax is calculated only for a positive unrealized profit using the asset's `asset_tax.tax_rate_percent` value.
 
 ## Market data
 

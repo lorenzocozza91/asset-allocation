@@ -23,5 +23,8 @@ public record AssetState(
         String priceSource,
         BigDecimal currentValue,
         BigDecimal unrealizedProfit,
-        BigDecimal unrealizedProfitPercentage) {
+        BigDecimal unrealizedProfitPercentage,
+        BigDecimal expectedTax,
+        BigDecimal profitWithoutTax,
+        BigDecimal profitWithoutTaxAndFees) {
 }

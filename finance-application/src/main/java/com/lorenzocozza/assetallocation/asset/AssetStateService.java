@@ -23,13 +23,15 @@ public class AssetStateService {
     public Optional<AssetState> getState(UUID assetId) {
         return assetStateRepository.findAsset(assetId)
                 .map(asset -> calculate(asset, assetStateRepository.findTransactionTotals(assetId),
-                        assetStateRepository.findLatestPrice(assetId).orElse(null)));
+                        assetStateRepository.findLatestPrice(assetId).orElse(null),
+                        assetStateRepository.findTaxRatePercent(assetId)));
     }
 
     private AssetState calculate(
             Asset asset,
             AssetStateRepository.TransactionTotals totals,
-            LatestMarketPrice latestPrice) {
+            LatestMarketPrice latestPrice,
+            BigDecimal taxRatePercent) {
         BigDecimal currentQuantity = totals.boughtQuantity().subtract(totals.soldQuantity());
         BigDecimal investedAmount = totals.totalBuyAmount()
                 .add(totals.buyFees())
@@ -40,6 +42,9 @@ public class AssetStateService {
         BigDecimal currentValue = null;
         BigDecimal unrealizedProfit = null;
         BigDecimal unrealizedProfitPercentage = null;
+        BigDecimal expectedTax = null;
+        BigDecimal profitWithoutTax = null;
+        BigDecimal profitWithoutTaxAndFees = null;
         BigDecimal latestPriceValue = null;
 
         if (latestPrice != null) {
@@ -48,6 +53,12 @@ public class AssetStateService {
             BigDecimal costBasis = currentQuantity.multiply(averageBuyPrice);
             unrealizedProfit = currentValue.subtract(costBasis);
             unrealizedProfitPercentage = percentage(unrealizedProfit, costBasis);
+            expectedTax = unrealizedProfit.signum() > 0
+                    ? unrealizedProfit.multiply(taxRatePercent)
+                            .divide(BigDecimal.valueOf(100), 8, RoundingMode.HALF_UP)
+                    : BigDecimal.ZERO;
+            profitWithoutTax = unrealizedProfit.subtract(expectedTax);
+            profitWithoutTaxAndFees = profitWithoutTax.subtract(totals.totalFees());
         }
 
         return new AssetState(
@@ -69,7 +80,10 @@ public class AssetStateService {
                 latestPrice == null ? null : latestPrice.source(),
                 currentValue,
                 unrealizedProfit,
-                unrealizedProfitPercentage);
+                unrealizedProfitPercentage,
+                expectedTax,
+                profitWithoutTax,
+                profitWithoutTaxAndFees);
     }
 
     private static BigDecimal divide(BigDecimal dividend, BigDecimal divisor) {

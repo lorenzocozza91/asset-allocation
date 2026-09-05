@@ -75,6 +75,16 @@ public class AssetStateRepository {
                 .findFirst();
     }
 
+    public BigDecimal findTaxRatePercent(UUID assetId) {
+        return jdbcTemplate.query(
+                        "SELECT tax_rate_percent FROM asset_tax WHERE asset_id = ?",
+                        (rs, rowNum) -> decimal(rs.getString("tax_rate_percent")),
+                        assetId.toString())
+                .stream()
+                .findFirst()
+                .orElse(BigDecimal.ZERO);
+    }
+
     private static BigDecimal decimal(String value) {
         return value == null ? BigDecimal.ZERO : new BigDecimal(value);
     }
