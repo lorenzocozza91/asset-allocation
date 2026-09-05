@@ -8,6 +8,7 @@ import java.util.UUID;
 public record AssetTransaction(
         UUID id,
         UUID assetId,
+        UUID brokerId,
         TransactionType transactionType,
         LocalDate transactionDate,
         BigDecimal quantity,

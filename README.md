@@ -75,6 +75,12 @@ Stores historical price observations. The current value of an asset is the most 
 - `source` — optional provider or broker name
 - `created_at` — insertion timestamp
 
+### `broker`
+
+Stores the financial brokers used for transactions. Broker records are created explicitly by the application or through SQL.
+
+Transactions can reference a broker through the nullable `broker_id` column. It is nullable to keep previously stored transactions valid.
+
 ## Build and test
 
 From the repository root:
@@ -103,7 +109,17 @@ GET http://localhost:8080/actuator/health
 
 ## Current scope
 
-The current implementation establishes the server, database connection, migration, and domain foundation. REST endpoints and transaction-management services will be added next.
+The current implementation establishes the server, database connection, migrations, domain foundation, and an asset-state endpoint. Asset and transaction-management services will be added next.
+
+## Asset state endpoint
+
+The current state of an asset can be retrieved with:
+
+```text
+GET /api/assets/{assetId}/state
+```
+
+The response includes current quantity, bought and sold quantities, buy/sell amounts, fees, invested amount, average buy price, latest stored market price, current value, and unrealized profit percentage.
 
 ## Market data
 

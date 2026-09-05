@@ -1,0 +1,7 @@
+### Health check
+GET http://localhost:8080/actuator/health
+Accept: application/json
+
+### Current state of the MSCI World asset
+GET http://localhost:8080/api/assets/8d2a7e45-c193-4f68-b527-90e6a3d1f804/state
+Accept: application/json
